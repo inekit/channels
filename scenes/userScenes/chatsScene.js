@@ -71,7 +71,7 @@ scene.hears(store.chats.getCategoriesWithCountStr(), async ctx=>{
 
     let category_name = ctx.message.text?.substring(0, ctx.message.text.lastIndexOf(' '))
 
-    if (category_name === "Все каналы") category_name = undefined;
+    if (category_name === "Все чаты") category_name = undefined;
 
     ctx.scene.state.category_name = category_name
     const link = store.chats.getRandomLink(category_name)

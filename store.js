@@ -72,6 +72,7 @@ const getCategoriesWithCountKbStr = (type, allType)=>()=>{
 }
 
 const getRandomLink = (type, allType)=>(category)=>{
+
     let categoryLinks;
     if (!category) categoryLinks = fileStore[allType].get('all')
     else categoryLinks = fileStore[type].get(category)
