@@ -197,6 +197,7 @@ function  createH (type, stepInfo, nextStepInfo, scene){
         
     });
     if (type==="select") { 
+        console.log(stepInfo.options)
         if (stepInfo.options && !stepInfo.cb) handler.action(stepInfo.options, ctx=>actions.addInput(ctx, stepInfo?.variable, nextStepInfo?.header, null, nextStepInfo?.keyboard));
         else if (stepInfo.options && stepInfo.cb) handler.action(stepInfo.options, ctx=>stepInfo?.cb(ctx)); 
         else throw new Error('no opt or cb'); 

@@ -12,6 +12,7 @@ const axios = require('axios')
 const fs = require('fs')
 const fsp = require("fs").promises;
 const AdmZip = require("adm-zip");
+const { type } = require('os');
 
 
 class FilesHandler extends Composer{
@@ -40,7 +41,7 @@ const scene = new CustomWizardScene('categoriesScene')
 
     } else {
 
-        ctx.scene.state.categories = store.getCategories()
+        ctx.scene.state.categories = store.channels.getCategories()
 
         keyboard = {name: 'categories_list_admin_keyboard', args: [ctx.scene.state.categories]}
         title = ctx.getTitle("CHOOSE_CATEGORY")
@@ -88,7 +89,24 @@ const scene = new CustomWizardScene('categoriesScene')
                             fs.readFile(`temp.txt`,(e, data)=>{
                                 if (e) {return }
                                 console.log(data.toString('utf-8').split('\n'))
-                                store.importCategoryArray(selected_item,data.toString('utf-8').split('\n'))
+                                console.log(ctx.scene.state.type)
+                                switch (ctx.scene.state.type) {
+                                    case  ctx.getTitle('CHANNELS'): {
+                                        store.channels.importCategoryArray(selected_item,data.toString('utf-8').split('\n'))
+
+                                        break;
+                                    }
+                                    case  ctx.getTitle('CHATS'): {
+                                        store.chats.importCategoryArray(selected_item,data.toString('utf-8').split('\n'))
+
+                                        break;
+                                    }
+                                    case  ctx.getTitle('BOTS'): {
+                                        store.bots.importArray(null,data.toString('utf-8').split('\n'))
+
+                                        break;
+                                    }
+                                }
                             })
                         })
                         .on('error', e => {/* An error has occured */})
@@ -126,13 +144,25 @@ const scene = new CustomWizardScene('categoriesScene')
 
                                   for (const zipEntry of zip.getEntries()) {
                                     
-                                    const name = store.getCategories().find(el=>
+                                    const name = store.channels.getCategories().find(el=>
                                         zipEntry?.name?.includes(el)
                                         )
 
-                                    if (name) store.importCategoryArray(name,zipEntry.getData('utf-8').toString().split('\n'))
-                                    else if (zipEntry?.name?.includes('Все каналы'))
-                                        store.importCategoryArray(null,zipEntry.getData('utf-8').toString().split('\n'))
+                                        switch (ctx.scene.state.type) {
+                                            case ctx.getTitle('CHANNELS'): {
+                                                if (name) store.channels.importCategoryArray(name,zipEntry.getData('utf-8').toString().split('\n'))
+                                                else if (zipEntry?.name?.includes('Все каналы'))
+                                                    store.channels.importCategoryArray(null,zipEntry.getData('utf-8').toString().split('\n'))
+                                                break;
+                                            }
+                                            case  ctx.getTitle('CHATS'): {
+                                                if (name) store.chats.importCategoryArray(name,zipEntry.getData('utf-8').toString().split('\n'))
+                                                else if (zipEntry?.name?.includes('1ВСЕ ЧАТЫ'))
+                                                    store.chats.importCategoryArray(null,zipEntry.getData('utf-8').toString().split('\n'))
+                                                break;
+                                            }
+                                        }
+                                    
                                   }
 
                                   await ctx.replyWithTitle('PARSING_FINISHED');
@@ -158,8 +188,21 @@ const scene = new CustomWizardScene('categoriesScene')
          ctx.scene.reenter({edit: true})
     })     
 })
+.addSelect({variable: 'type', type: 'select', options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS','BOTS': 'BOTS'}, cb: (ctx=>{
+    ctx.scene.state.type = ctx.match[0]
+    console.log(111,ctx.scene.state.type)
+    ctx.replyStep(2)
+})})
+.addSelect({variable: 'type', type: 'select',options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS'}, cb: (ctx=>{
+    ctx.scene.state.type = ctx.match[0]
 
+    ctx.replyStep(2)
+})})
+.addSelect({variable: 'type', type: 'select',options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS'}, cb: (ctx=>{
+    ctx.scene.state.type = ctx.match[0]
 
+    ctx.replyStep(3)
+})})
   
 
 scene.action(/^category\-(.+)$/g, async ctx => {
@@ -195,20 +238,21 @@ scene.action(/^add\-file\-(.+)$/g,ctx=>{
 
     ctx.scene.state.selected_item = ctx.match[1];
 
-    ctx.replyStep(2)
+    ctx.replyStep(5)
 
 })
 scene.action('add-file',ctx=>{
     ctx.answerCbQuery().catch(console.log);
 
-    ctx.replyStep(2)
+    ctx.replyStep(4)
 
 })
 
 scene.action('add-zip-file',ctx=>{
     ctx.answerCbQuery().catch(console.log);
 
-    ctx.replyStep(3)
+    console.log(1)
+    ctx.replyStep(6)
 
 })
 

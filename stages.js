@@ -8,7 +8,9 @@ const mainStage = new Stage([
 	...require('./scenes/mainScene'),
 	require('./scenes/adminScene'),
 
-	require('./scenes/userScenes/catalogScene'),
+	require('./scenes/userScenes/botsScene'),
+	require('./scenes/userScenes/chatsScene'),
+	require('./scenes/userScenes/channelsScene'),
 
 	require('./scenes/adminScenes/adminsScene'),
 	require('./scenes/adminScenes/categoriesScene'),

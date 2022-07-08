@@ -42,10 +42,9 @@ exports.main_menu_bottom_keyboard = (ctx, isAdmin) => {
 
 	const buttons = [
 		[ 
-			ctx.getTitle('BUTTON_RANDOM'),
-		],
-		[ 
-			ctx.getTitle('BUTTON_CATEGORIES'),
+			ctx.getTitle('BUTTON_CHANNELS'),
+			ctx.getTitle('BUTTON_CHATS'),
+			ctx.getTitle('BUTTON_BOTS'),
 		],
 		[ 
 			ctx.getTitle('BUTTON_BACK_USER'),
@@ -57,6 +56,72 @@ exports.main_menu_bottom_keyboard = (ctx, isAdmin) => {
 	return Markup.keyboard(buttons).resize()
 }
 
+
+exports.channels_menu_bottom_keyboard = (ctx, isAdmin) => {
+
+	const buttons = [
+		[ 
+			ctx.getTitle('BUTTON_RANDOM_CHANNEL'),
+		],
+		[ 
+			ctx.getTitle('BUTTON_CATEGORIES'),
+		],
+		[
+			ctx.getTitle('BUTTON_CHATS'),
+			ctx.getTitle('BUTTON_BOTS'),
+		],
+		[ 
+			ctx.getTitle('BUTTON_BACK_USER'),
+		],
+	]
+
+	if (isAdmin) buttons.push([ctx.getTitle('ADMIN_SCENE_BUTTON')])
+
+	return Markup.keyboard(buttons).resize()
+} 
+
+exports.chats_menu_bottom_keyboard = (ctx, isAdmin) => {
+
+	const buttons = [
+		[ 
+			ctx.getTitle('BUTTON_RANDOM_CHAT'),
+		],
+		[ 
+			ctx.getTitle('BUTTON_CATEGORIES'),
+		],
+		[
+			ctx.getTitle('BUTTON_CHANNELS'),			
+			ctx.getTitle('BUTTON_BOTS'),
+		],
+		[ 
+			ctx.getTitle('BUTTON_BACK_USER'),
+		],
+	]
+
+	if (isAdmin) buttons.push([ctx.getTitle('ADMIN_SCENE_BUTTON')])
+
+	return Markup.keyboard(buttons).resize()
+} 
+
+exports.bots_menu_bottom_keyboard = (ctx, isAdmin) => {
+
+	const buttons = [
+		[ 
+			ctx.getTitle('BUTTON_RANDOM_BOT'),
+		],
+		[
+			ctx.getTitle('BUTTON_CHANNELS'),			
+			ctx.getTitle('BUTTON_CHATS'),
+		],
+		[ 
+			ctx.getTitle('BUTTON_BACK_USER'),
+		],
+	]
+
+	if (isAdmin) buttons.push([ctx.getTitle('ADMIN_SCENE_BUTTON')])
+
+	return Markup.keyboard(buttons).resize()
+} 
 
 
 
