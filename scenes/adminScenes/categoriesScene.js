@@ -29,11 +29,14 @@ class FilesHandler extends Composer{
 const scene = new CustomWizardScene('categoriesScene')
 .enter(async ctx => {
 
-    const { edit, category_id, category_name} = ctx.scene.state
+    const { edit, category_id, category_name, type} = ctx.scene.state
     let keyboard;
     let title;
 
-    console.log(category_name)
+    console.log(type?.toLowerCase() ?? ctx.scene.state.fileStore ?? 'channels')
+    ctx.scene.state.fileStore = type?.toLowerCase() ?? ctx.scene.state.fileStore ?? 'channels';
+
+    
     if (category_name) {
 
         keyboard = {name: 'category_admin_keyboard', args: [category_name]};
@@ -41,7 +44,8 @@ const scene = new CustomWizardScene('categoriesScene')
 
     } else {
 
-        ctx.scene.state.categories = store.channels.getCategories()
+
+        if (type !=='BOTS') ctx.scene.state.categories = store[ctx.scene.state.fileStore].getCategories()
 
         keyboard = {name: 'categories_list_admin_keyboard', args: [ctx.scene.state.categories]}
         title = ctx.getTitle("CHOOSE_CATEGORY")
@@ -56,8 +60,8 @@ const scene = new CustomWizardScene('categoriesScene')
 .addStep({variable:"adding_name", confines:["string45"], type: 'confirm', cb: async ctx=>{
     ctx.answerCbQuery().catch(console.log);
     const {adding_name} = ctx.scene.state?.input;
-    store.addCategory(adding_name);
-    ctx.scene.reenter({edit: true})
+    store[ctx.scene.state.fileStore].addCategory(adding_name);
+    ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
 }})
 .addStep({header: 'CONFIRM_DELETE_CATEGORY', keyboard: 'confirm_keyboard', type: 'action', 
  handler: deleteHandler.action('confirm',async ctx=>{
@@ -66,9 +70,11 @@ const scene = new CustomWizardScene('categoriesScene')
 
     const {selected_item} = ctx.scene.state;
 
-    store.deleteCategory(selected_item);
+    console.log(ctx.scene.state.fileStore)
+
+    store[ctx.scene.state.fileStore].deleteCategory(selected_item);
     delete ctx.scene.state.selected_item; delete ctx.scene.state.category_name;
-    ctx.scene.reenter({edit: true})
+    ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
 
 })})
 .addStep({
@@ -89,19 +95,19 @@ const scene = new CustomWizardScene('categoriesScene')
                             fs.readFile(`temp.txt`,(e, data)=>{
                                 if (e) {return }
                                 console.log(data.toString('utf-8').split('\n'))
-                                console.log(ctx.scene.state.type)
+
                                 switch (ctx.scene.state.type) {
-                                    case  ctx.getTitle('CHANNELS'): {
+                                    case  'CHANNELS': {
                                         store.channels.importCategoryArray(selected_item,data.toString('utf-8').split('\n'))
 
                                         break;
                                     }
-                                    case  ctx.getTitle('CHATS'): {
+                                    case  'CHATS': {
                                         store.chats.importCategoryArray(selected_item,data.toString('utf-8').split('\n'))
 
                                         break;
                                     }
-                                    case  ctx.getTitle('BOTS'): {
+                                    case  'BOTS': {
                                         store.bots.importArray(null,data.toString('utf-8').split('\n'))
 
                                         break;
@@ -115,7 +121,7 @@ const scene = new CustomWizardScene('categoriesScene')
         })
 
         delete ctx.scene.state.selected_item; delete ctx.scene.state.category_name;
-         ctx.scene.reenter({edit: true})
+         ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
     })     
 })
 .addStep({
@@ -144,18 +150,18 @@ const scene = new CustomWizardScene('categoriesScene')
 
                                   for (const zipEntry of zip.getEntries()) {
                                     
-                                    const name = store.channels.getCategories().find(el=>
+                                    const name = store[ctx.scene.state.fileStore].getCategories().find(el=>
                                         zipEntry?.name?.includes(el)
                                         )
 
                                         switch (ctx.scene.state.type) {
-                                            case ctx.getTitle('CHANNELS'): {
+                                            case 'CHANNELS': {
                                                 if (name) store.channels.importCategoryArray(name,zipEntry.getData('utf-8').toString().split('\n'))
                                                 else if (zipEntry?.name?.includes('Все каналы'))
                                                     store.channels.importCategoryArray(null,zipEntry.getData('utf-8').toString().split('\n'))
                                                 break;
                                             }
-                                            case  ctx.getTitle('CHATS'): {
+                                            case 'CHATS': {
                                                 if (name) store.chats.importCategoryArray(name,zipEntry.getData('utf-8').toString().split('\n'))
                                                 else if (zipEntry?.name?.includes('1ВСЕ ЧАТЫ'))
                                                     store.chats.importCategoryArray(null,zipEntry.getData('utf-8').toString().split('\n'))
@@ -166,11 +172,11 @@ const scene = new CustomWizardScene('categoriesScene')
                                   }
 
                                   await ctx.replyWithTitle('PARSING_FINISHED');
-                                  await ctx.scene.reenter({edit: false})
+                                  await ctx.scene.reenter({edit: false, type: ctx.scene.state.fileStore?.toUpperCase()})
 
                                 } catch (e) {
                                     await ctx.replyWithTitle('PARSING_ERROR');
-                                    await ctx.scene.reenter({edit: false})
+                                    await ctx.scene.reenter({edit: false, type: ctx.scene.state.fileStore?.toUpperCase()})
 
 
                                 }
@@ -185,31 +191,17 @@ const scene = new CustomWizardScene('categoriesScene')
         })
 
         delete ctx.scene.state.selected_item; delete ctx.scene.state.category_name;
-         ctx.scene.reenter({edit: true})
+         ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
     })     
 })
-.addSelect({variable: 'type', type: 'select', options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS','BOTS': 'BOTS'}, cb: (ctx=>{
-    ctx.scene.state.type = ctx.match[0]
-    console.log(111,ctx.scene.state.type)
-    ctx.replyStep(2)
-})})
-.addSelect({variable: 'type', type: 'select',options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS'}, cb: (ctx=>{
-    ctx.scene.state.type = ctx.match[0]
 
-    ctx.replyStep(2)
-})})
-.addSelect({variable: 'type', type: 'select',options: {'CHANNELS': 'CHANNELS', 'CHATS': 'CHATS'}, cb: (ctx=>{
-    ctx.scene.state.type = ctx.match[0]
-
-    ctx.replyStep(3)
-})})
   
 
 scene.action(/^category\-(.+)$/g, async ctx => {
     ctx.answerCbQuery().catch(console.log);
     const category_name = ctx.match[1];
 
-    ctx.scene.enter('categoriesScene',{edit: true, category_name, categories: ctx.scene.state.categories })
+    ctx.scene.enter('categoriesScene',{edit: true, category_name, categories: ctx.scene.state.categories, type: ctx.scene.state.fileStore?.toUpperCase() })
 })
 
 
@@ -238,21 +230,20 @@ scene.action(/^add\-file\-(.+)$/g,ctx=>{
 
     ctx.scene.state.selected_item = ctx.match[1];
 
-    ctx.replyStep(5)
+    ctx.replyStep(2)
 
 })
 scene.action('add-file',ctx=>{
     ctx.answerCbQuery().catch(console.log);
 
-    ctx.replyStep(4)
+    ctx.replyStep(2)
 
 })
 
 scene.action('add-zip-file',ctx=>{
     ctx.answerCbQuery().catch(console.log);
 
-    console.log(1)
-    ctx.replyStep(6)
+    ctx.replyStep(3)
 
 })
 
@@ -280,12 +271,12 @@ function inputFile(ctx){
 function answerAffectCb(ctx, res){
     if (!res?.affectedRows) {
         ctx.answerCbQuery(ctx.getTitle("NOT_AFFECTED")).catch(console.log);
-        return ctx.scene.reenter({edit: true})
+        return ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
     }
 
 
     ctx.answerCbQuery(ctx.getTitle("AFFECTED")).catch(console.log);
-    return ctx.scene.reenter({edit: true})
+    return ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
 }
 
 
@@ -294,7 +285,7 @@ scene.action('back', async ctx => {
     ctx.answerCbQuery().catch(console.log);
 
     delete ctx.scene.state.selected_item; delete ctx.scene.state.category_name
-    ctx.scene.reenter({edit: true})
+    ctx.scene.reenter({edit: true, type: ctx.scene.state.fileStore?.toUpperCase()})
 })
 
 

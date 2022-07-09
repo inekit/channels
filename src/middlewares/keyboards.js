@@ -161,8 +161,10 @@ exports.pay_alpinist_keyboard = (ctx) => Markup.keyboard([
 
 exports.admin_main_keyboard = ctx=>Markup.keyboard([
 
-	[
-		ctx.getTitle('BUTTON_CATEGORIES'),		
+	[ 
+		ctx.getTitle('BUTTON_CHANNELS'),
+		ctx.getTitle('BUTTON_CHATS'),
+		ctx.getTitle('BUTTON_BOTS'),
 	],
 	[
 		ctx.getTitle('BUTTON_CHANGE_TEXT'),
@@ -176,8 +178,10 @@ exports.admin_main_keyboard = ctx=>Markup.keyboard([
 exports.admin_main_keyboard_owner = ctx => 
  Markup.keyboard([
 
-	[
-		ctx.getTitle('BUTTON_CATEGORIES'),		
+	[ 
+		ctx.getTitle('BUTTON_CHANNELS'),
+		ctx.getTitle('BUTTON_CHATS'),
+		ctx.getTitle('BUTTON_BOTS'),
 	],
 	[
 		ctx.getTitle('BUTTON_ADMINS')

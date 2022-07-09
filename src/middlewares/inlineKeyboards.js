@@ -92,10 +92,11 @@ exports.admins_actions_keyboard = (ctx ) => {
 exports.change_text_actions_keyboard = (ctx ) => {
 
     const keyboard = inlineKeyboard([
-        callbackButton(ctx.getTitle("BUTTON_CHANGE_GREETING"), 'change_greeting'),
-        callbackButton(ctx.getTitle("BUTTON_CHANGE_HELP"), 'change_help'),
-        callbackButton(ctx.getTitle("BUTTON_CHANGE_CARD"), 'change_card'),
-        callbackButton(ctx.getTitle("BUTTON_CHANGE_PHOTO"), 'change_photo')
+        callbackButton(ctx.getTitle("BUTTON_CHANGE_GREETING"), 'change_GREETING'),
+        callbackButton(ctx.getTitle("BUTTON_CHANGE_HELP"), 'change_HOME_MENU'),
+        callbackButton(ctx.getTitle("BUTTON_CHANGE_CARD"), 'change_CATEGORY_ADD_TITLE'),
+        callbackButton(ctx.getTitle("BUTTON_CHANGE_PHOTO"), 'change_photo'),
+        callbackButton(ctx.getTitle("BUTTON_CHANGE_INFO"), 'change_BUTTON_BACK_USER')
     ], { columns: 1 })
 
     return keyboard
@@ -378,13 +379,21 @@ function SortArray([name],[name2]){
 exports.categories_list_admin_keyboard = (ctx, data) => {
 
     const keyboard = inlineKeyboard(data?.sort(SortArray)?.map((name) => 
-     callbackButton(name, `category-${name}`)), { columns: 2 })
+     callbackButton(name, `category-${name}`)) ?? [], { columns: 2 })
 
-     keyboard.reply_markup.inline_keyboard.push(
+    keyboard.reply_markup.inline_keyboard.push(
+        
         [callbackButton(ctx.getTitle(`BUTTON_ADD_FILE`), `add-file`)],
-        [callbackButton(ctx.getTitle(`BUTTON_ADD_ZIP_FILE`), `add-zip-file`)],
+        
+    )
+
+    if (data?.length) keyboard.reply_markup.inline_keyboard.push(
+        
+        [callbackButton(ctx.getTitle(`BUTTON_ADD_ZIP_FILE`), `add-zip-file`)] ,
         [callbackButton(ctx.getTitle(`BUTTON_ADD_CATEGORY`), `add-category`)],
     )
+
+     
     
     return keyboard
 }

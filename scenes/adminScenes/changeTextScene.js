@@ -34,13 +34,12 @@ scene.action(/change\_(.+)/g, ctx=>{
 
     const type = ctx.match[1];
 
-    switch (type){
-        case 'greeting': {ctx.replyStep(0); break;}
-        case 'card': {ctx.replyStep(3); break;}
-        case 'help': {ctx.replyStep(1); break;}
-        case 'photo': {ctx.replyStep(2); break;}
+    ctx.scene.state.variable = type;
 
-    }
+    if (type==='photo') return ctx.replyStep(1);
+
+    return ctx.replyStep(0);
+
 })
 
 scene.hears(titles.getTitle('BUTTON_CHANGE_HELP','ru'), ctx=>{
@@ -51,21 +50,15 @@ scene.hears(titles.getTitle('BUTTON_CHANGE_PHOTO','ru'), ctx=>{
 })
 
 scene
-.addStep({variable: 'greeting_text', type: 'confirm', cb: (ctx=>{
+.addStep({variable: 'temp', type: 'confirm', cb: (ctx=>{
         ctx.answerCbQuery().catch(console.log);
 
-        ctx.setTitle('GREETING',ctx.scene.state.input?.greeting_text)
+        console.log(1,ctx.scene.state.input?.temp)
+
+        ctx.setTitle(ctx.scene.state.variable,ctx.scene.state.input?.temp)
 
         ctx.scene.reenter()
     })
-})
-.addStep({variable: 'main_text', type: 'confirm', cb: (ctx=>{
-        ctx.answerCbQuery().catch(console.log);
-
-        ctx.setTitle('HOME_MENU',ctx.scene.state.input?.main_text)
-
-        ctx.scene.reenter()
-}   )
 })
 .addStep({
     variable: 'photo', 
@@ -78,14 +71,8 @@ scene
         ctx.scene.reenter()
     })     
 })
-.addStep({variable: 'card_text', type: 'confirm', cb: (ctx=>{
-    ctx.answerCbQuery().catch(console.log);
 
-    ctx.setTitle('CATEGORY_ADD_TITLE',ctx.scene.state.input?.card_text)
 
-    ctx.scene.reenter()
-}   )
-})
 
 scene.action('deleteAdmin', async ctx => {
 

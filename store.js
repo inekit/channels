@@ -27,7 +27,7 @@ function randomInteger(min, max) {
     return Math.floor(rand);
   }
 
-const getCategories = ()=>{return Object.keys(fileStore.channels.get()??{})};
+const getCategories = (type)=>()=>{return Object.keys(fileStore?.[type].get()??{})};
 
 //const categories = getCategories();
 
@@ -38,7 +38,7 @@ const getCount = (type, allType)=> (category)=>{
 }
 
 const getCategoriesWithCountStr = (type, allType)=>()=>{
-    const categories = getCategories();
+    const categories = getCategories(type)();
     const an = type==='chats' ? "Все чаты " : 'Все каналы ';
 
     return [an+getCount(type, allType)(), ...categories.reduce((prev, cur)=>{
@@ -54,7 +54,7 @@ function SortArray(name,name2){
 }
 
 const getCategoriesWithCount = (type)=>()=>{
-    const categories = getCategories();
+    const categories = getCategories(type)();
 
     return categories.reduce((prev, cur)=>{
             prev[cur] = {count: fileStore[type].get(cur)?.length ?? 0}
@@ -63,7 +63,7 @@ const getCategoriesWithCount = (type)=>()=>{
 }
 
 const getCategoriesWithCountKbStr = (type, allType)=>()=>{
-    const categories = getCategories();
+    const categories = getCategories(type)();
     const an = type==='chats' ? "Все чаты " : 'Все каналы ';
     return [an+getCount(type, allType)(), ...categories.reduce((prev, cur)=>{
         prev.push(`${cur} ${fileStore[type].get(cur)?.length ?? 0}`)
@@ -94,35 +94,40 @@ module.exports = {
         getCategoriesWithCount: getCategoriesWithCount('channels', 'allChannels'),
         getCategoriesWithCountStr: getCategoriesWithCountStr('channels', 'allChannels'),
         getCategoriesWithCountKbStr: getCategoriesWithCountKbStr('channels', 'allChannels'),
-        addCategory:(name)=>{
-            channels.set(name, [])
-            chats.set(name, [])
-        },
         addLink: (category, link)=>{
-            if (!category) allChannels.append('all',link);
-            channels.append(category,link)
+            if (!category) fileStore.allChannels.append('all',link);
+            fileStore.channels.append(category,link)
         },
         clear: ()=>{channels.empty();},
-        getCategories,
-        importCategoryArray: importCategoryArray('channels', 'allChannels')
+        getCategories: getCategories('channels'),
+        importCategoryArray: importCategoryArray('channels', 'allChannels'),
+        addCategory:(name)=>{
+            fileStore.channels.set(name, [])
+        },
+        deleteCategory:(category)=>{
+            fileStore.channels.set(category,undefined)
+        },
     },
-    addCategory:(name)=>{
-        channels.set(name, [])
-        chats.set(name, [])
-    },
+    
     chats: {
         getRandomLink: getRandomLink('chats', 'allChats'),
         getCount: getCount('chats', 'allChats'),
         getCategoriesWithCount: getCategoriesWithCount('chats', 'allChats'),
         getCategoriesWithCountStr: getCategoriesWithCountStr('chats', 'allChats'),
         getCategoriesWithCountKbStr: getCategoriesWithCountKbStr('chats', 'allChats'),
-        addCategory:(name)=>{
-            channels.set(name, [])
-            chats.set(name, [])
-        },
-        clear: ()=>{chats.empty();},
-        getCategories,
+        clear: ()=>{fileStore.chats.empty();},
+        getCategories: getCategories('chats'),
         importCategoryArray: importCategoryArray('chats', 'allChats'),
+        addCategory:(name)=>{
+            fileStore.chats.set(name, [])
+        },
+        addLink: (category, link)=>{
+            if (!category) fileStore.allChats.append('all',link);
+            fileStore.chats.append(category,link)
+        },
+        deleteCategory:(category)=>{
+            fileStore.chats.set(category,undefined)
+        },
     },
     bots: {
         getRandomLink: getRandomLink('bots', 'allBots'),
@@ -130,18 +135,5 @@ module.exports = {
         importArray: importCategoryArray('bots', 'allBots'),
 
     },
-    
-    
-    
-    getCategories,
-    deleteCategory:(category)=>{
-        channels.set(category,undefined)
-        chats.set(category,undefined)
-    },
-
-
-    
-
-
     
 }
