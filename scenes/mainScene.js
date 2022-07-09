@@ -22,12 +22,15 @@ const clientScene = new CustomWizardScene('clientScene')
 
         ctx.scene.state.userObj = userObj = userObj?.[0]
 
+
     if (!userObj) {
 
-        await ctx.replyWithPhoto(ctx.getTitle('GREETING_PHOTO'), {caption: ctx.getTitle("GREETING")}).catch(async e=>{
+        await ctx.replyWithTitle("GREETING");
+
+        /*await ctx.replyWithPhoto(ctx.getTitle('GREETING_PHOTO'), {caption: ctx.getTitle("GREETING")}).catch(async e=>{
             console.log('no photo to send');
-            await ctx.replyWithTitle("GREETING");
-        })
+            
+        })*/
         
         userObj = await connection.getRepository("User")
         .save({id: ctx.from.id})
