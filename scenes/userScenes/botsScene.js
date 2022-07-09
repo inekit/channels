@@ -7,7 +7,7 @@ itemHandler = new Composer();
 const tOrmCon = require("../../db/data-source");
 const { CustomWizardScene} = require('telegraf-steps-engine');
 const store = require('../../store')
-const totalStr = 'Все каналы '+ store.bots.getCount();
+const totalStr = 'Все боты '+ store.bots.getCount();
 
 const scene = new CustomWizardScene('botsScene')
 .enter(async ctx => {
@@ -26,7 +26,7 @@ const scene = new CustomWizardScene('botsScene')
     await ctx.replyWithKeyboard("CATEGORY_ADD_TITLE",{name: 'bots_menu_bottom_keyboard', args: [isAdmin]})
 
     ctx.scene.state.temp_post = await ctx.replyWithKeyboard(
-        ctx.getTitle('ITEM_CARD_CATEGORY', [cTitle, category_name ?? "Все каналы",store.bots.getCount(category_name)]), 
+        ctx.getTitle('ITEM_CARD_CATEGORY_BOT', [cTitle, category_name ?? "Все боты",store.bots.getCount(category_name)]), 
         category_name ? {name:  'item_keyboard', args: [link, category_name]}
         : {name: 'item_keyboard_main', args: [link]})
 
@@ -47,7 +47,7 @@ scene.action('random_link', async ctx => {
     const cTitle = cNameExec?.[1] ? '@'+cNameExec[1] : link
 
     ctx.scene.state.temp_post = await ctx.replyWithKeyboard(
-        ctx.getTitle('ITEM_CARD_CATEGORY', [cTitle, category_name ?? "Все каналы",store.bots.getCount(category_name)]), 
+        ctx.getTitle('ITEM_CARD_CATEGORY_BOT', [cTitle, category_name ?? "Все боты",store.bots.getCount(category_name)]), 
         category_name ? {name:  'item_keyboard', args: [link, category_name]}
         : {name: 'item_keyboard_main', args: [link]})
     
@@ -76,7 +76,7 @@ scene.action('back_random', async ctx => {
 
     const cTitle = cNameExec?.[1] ? '@'+cNameExec[1] : link
 
-    await ctx.editMenu(ctx.getTitle('ITEM_CARD_CATEGORY', [cTitle, "Все каналы",store.bots.getCount()]), {name: 'item_keyboard_main', args: [link]})
+    await ctx.editMenu(ctx.getTitle('ITEM_CARD_CATEGORY_BOT', [cTitle, "Все боты",store.bots.getCount()]), {name: 'item_keyboard_main', args: [link]})
     
 })
 

@@ -51,6 +51,8 @@
   "ITEM_CARD": "*\n\nКатегория:\n<b>Все каналы</b> / * каналов",
   "ITEM_CARD_CATEGORY": "*\n\nКатегория:\n<b>*</b> / * каналов",
   "ITEM_CARD_CATEGORY_CHAT": "*\n\nКатегория:\n<b>*</b> / * чатов",
+  "ITEM_CARD_CATEGORY_BOT": "*\n\nКатегория:\n<b>*</b> / * ботов",
+
   "BUTTON_HIDE": "К списку категорий",
   "BUTTON_HIDE_TOTAL": "В меню",
   "NO_ITEMS_YET": "Пока нет каналов в категории",
