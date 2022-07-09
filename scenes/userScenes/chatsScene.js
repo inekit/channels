@@ -24,7 +24,7 @@ const scene = new CustomWizardScene('chatsScene')
             const isAdmin = await require('../../Utils/authAdmin')(ctx.from.id, true)
             .catch(()=>{ })
         
-            await ctx.replyWithKeyboard("CATEGORY_ADD_TITLE",{name: 'channels_menu_bottom_keyboard', args: [isAdmin]})
+            await ctx.replyWithKeyboard("CATEGORY_ADD_TITLE",{name: 'chats_menu_bottom_keyboard', args: [isAdmin]})
         }
 
         const link = store.chats.getRandomLink(category_name)
