@@ -12,13 +12,21 @@ const totalStr = 'Все каналы '+ store.channels.getCount();
 const scene = new CustomWizardScene('catalogScene')
 .enter(async ctx => {
 
-    const { edit, category_id, category_name,random, userObj} = ctx.scene.state
+    const { edit, category_id, category_name,random, userObj, forceInitKB} = ctx.scene.state
     let keyboard;
     let title;
 
     const countTotal = store.channels.getCount();
     
     if (random) {
+
+        if (forceInitKB) {
+            const isAdmin = await require('../../Utils/authAdmin')(ctx.from.id, true)
+            .catch(()=>{ })
+        
+            await ctx.replyWithKeyboard("CATEGORY_ADD_TITLE",{name: 'channels_menu_bottom_keyboard', args: [isAdmin]})
+        }
+       
 
         const link = store.channels.getRandomLink(category_name)
 
@@ -153,7 +161,7 @@ scene.hears(titles.getTitle('BUTTON_CATEGORIES','ru'), ctx=>{
 })
 
 scene.hears(titles.getTitle('BUTTON_CHATS','ru'), ctx=>{
-    ctx.scene.enter('chatsScene', {edit: false});
+    ctx.scene.enter('chatsScene', {edit: false,random: true, forceInitKB: true});
 })
 
 scene.hears(titles.getTitle('BUTTON_BOTS','ru'), ctx=>{

@@ -80,10 +80,10 @@ clientScene.action('admin_menu',ctx=>{
 })
 
 clientScene.hears(titles.getTitle('BUTTON_CHANNELS','ru'), ctx=>{
-    ctx.scene.enter('catalogScene', {edit: false});
+    ctx.scene.enter('catalogScene', {edit: false, random: true,forceInitKB: true});
 })
 clientScene.hears(titles.getTitle('BUTTON_CHATS','ru'), ctx=>{
-    ctx.scene.enter('chatsScene', {edit: false});
+    ctx.scene.enter('chatsScene', {edit: false, random: true, forceInitKB: true});
 })
 clientScene.hears(titles.getTitle('BUTTON_BOTS','ru'), ctx=>{
     ctx.scene.enter('botsScene', {edit: false});

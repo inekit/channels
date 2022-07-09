@@ -7,18 +7,25 @@ itemHandler = new Composer();
 const tOrmCon = require("../../db/data-source");
 const { CustomWizardScene} = require('telegraf-steps-engine');
 const store = require('../../store')
-const totalStr = 'Все каналы '+ store.chats.getCount();
+const totalStr = 'Все чаты '+ store.chats.getCount();
 
 const scene = new CustomWizardScene('chatsScene')
 .enter(async ctx => {
 
-    const { edit, category_id, category_name,random, userObj} = ctx.scene.state
+    const { edit, category_id, category_name,random, userObj,forceInitKB} = ctx.scene.state
     let keyboard;
     let title;
 
     const countTotal = store.chats.getCount();
     
     if (random) {
+
+        if (forceInitKB) {
+            const isAdmin = await require('../../Utils/authAdmin')(ctx.from.id, true)
+            .catch(()=>{ })
+        
+            await ctx.replyWithKeyboard("CATEGORY_ADD_TITLE",{name: 'channels_menu_bottom_keyboard', args: [isAdmin]})
+        }
 
         const link = store.chats.getRandomLink(category_name)
 
@@ -153,7 +160,7 @@ scene.hears(titles.getTitle('BUTTON_CATEGORIES','ru'), ctx=>{
 })
 
 scene.hears(titles.getTitle('BUTTON_CHANNELS','ru'), ctx=>{
-    ctx.scene.enter('catalogScene', {edit: false});
+    ctx.scene.enter('catalogScene', {edit: false,random: true, forceInitKB: true});
 })
 scene.hears(titles.getTitle('BUTTON_BOTS','ru'), ctx=>{
     ctx.scene.enter('botsScene', {edit: false});
