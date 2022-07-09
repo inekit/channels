@@ -91,11 +91,11 @@ scene.hears(titles.getTitle('BUTTON_RANDOM_BOT','ru'), ctx=>{
 })
 
 scene.hears(titles.getTitle('BUTTON_CATEGORIES','ru'), ctx=>{
-    ctx.scene.reenter({edit: false, random: false});
+    ctx.scene.reenter({edit: false, random: false,random: true, forceInitKB: true});
 })
 
 scene.hears(titles.getTitle('BUTTON_CHANNELS','ru'), ctx=>{
-    ctx.scene.enter('catalogScene', {edit: false});
+    ctx.scene.enter('catalogScene', {edit: false,random: true, forceInitKB: true});
 })
 scene.hears(titles.getTitle('BUTTON_BOTS','ru'), ctx=>{
     ctx.scene.enter('botsScene', {edit: false});
