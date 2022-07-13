@@ -10,20 +10,31 @@ module.exports = new EntitySchema({
             primary: true,
             type: "bigint",
         },
-        lastCitySearch: {
-            type:"varchar",
-            length:200,
-            nullable: true
-        },
-        lastCoordinates: {
-            type:"varchar",
-            length:200,
-            nullable: true
-        },
         lastUse: {
             type: "date",
             nullable: true
         },
+        date_register: {
+            type: "datetime",
+            createDate: true,
+        },
+        is_alive: {
+            type: "tinyint",
+            nullable: false,
+            default: true,
+        },
+        language_code: {
+            type: "varchar",
+            nullable: true,
+        },
+        username: {
+            type: "varchar",
+            nullable: true,
+        },
+        is_arabic: {
+            type: "tinyint",
+            nullable: true,
+        }
         
     }
 });

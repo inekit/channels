@@ -5,7 +5,7 @@ const shortcuts = require("telegraf-steps-engine/shortcuts/shortcuts");
 const middlewares = require("telegraf-steps-engine/middlewares/middlewares");
 require('dotenv').config()
 //const LocalSession = require('telegraf-session-local')
-
+const Cron = require("./Cron/Cron")
 const allowed_updates = ["message", "callback_query", "chat_member"];
 const TOKEN =
     process.env.BOT_TOKEN;
@@ -58,6 +58,8 @@ console.log('started');
             dropPendingUpdates: true,
         });
     }
+
+    const cron = new Cron(ctx)
 })();
 
 

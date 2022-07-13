@@ -25,8 +25,7 @@ const mainStage = new Stage([
 })*/
 
 mainStage.start(async ctx => {
-	stat.increaseUse(ctx.from?.id).catch(e=>{ctx.replyWithTitle(e.message)})
-
+	
 	ctx.scene.enter('clientScene')
 })
 

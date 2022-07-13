@@ -4,6 +4,7 @@ const { CustomWizardScene, titles} = require('telegraf-steps-engine');
 const { confirmDialog } = require('telegraf-steps-engine/replyTemplates');
 const tOrmCon = require("../db/data-source");
 const store = require('../store')
+const stat = require("../Utils/statistics")
 
 const clientScene = new CustomWizardScene('clientScene')
 .enter(async ctx=>{
@@ -41,14 +42,18 @@ const clientScene = new CustomWizardScene('clientScene')
     }
 
     if (userObj?.userId) {}// await ctx.replyWithKeyboard("#", {name: 'main_menu_bottom_keyboard', args: [true]})
-    else if (userObj?.loginAgo!=="0") {
+    
+    if (userObj?.loginAgo!=="0") {
         await connection.query(
-            "UPDATE channels.users u SET lastUse = now() WHERE id = ?", 
-            [ctx.from?.id])
+            "UPDATE channels.users u SET lastUse = now(), username = ?, is_arabic = ?, language_code = ? WHERE id = ?", 
+            [ctx.from?.username, /[\u0621-\u064A]/.test(ctx.from?.first_name), ctx.from?.language_code ,ctx.from?.id])
         .catch((e)=>{
             console.log(e)
             ctx.replyWithTitle("DB_ERROR")
         })
+
+        await stat.increaseUse(ctx.from?.id).catch(e=>{ctx.replyWithTitle(e.message)})
+
     }
     //console.log(store.getAllRandomLink())
     const keyboard =  'main_menu_keyboard'//{name: 'main_menu_keyboard', args: [store.getAllRandomLink(),userObj?.userId]};

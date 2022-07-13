@@ -2,7 +2,7 @@ const { Composer, Scenes: { BaseScene } } = require('telegraf')
 const titles = require('../src/middlewares/titles')
 const main_menu_button = 'admin_back_keyboard'
 const tOrmCon = require("../db/data-source");
-
+const moment = require("moment")
 const adminScene = new BaseScene('adminScene')
 
 adminScene.enter(async ctx=>{
@@ -51,29 +51,77 @@ function formatDate(date) {
 
 adminScene.hears(titles.getValues('BUTTON_STATISTICS'),async ctx => {
     const connection =await tOrmCon
-    connection.query(`SELECT date, users_per_day, cart_per_day, users_per_week, cart_per_week from 
-	(SELECT date, users_per_day, cart_per_day FROM channels.statistics
-	WHERE DATEDIFF(now(), date) < 7) day,
-    (SELECT sum(users_per_day) users_per_week, sum(cart_per_day) cart_per_week FROM channels.statistics
-	WHERE DATEDIFF(now(), date) < 7 GROUP BY date) week`)
-    .then((res) => {
-        if (!res || !res.length)  return ctx.replyWithTitle('THERE_IS_NO_STAT')
-
-        let statStr = res.reduce((prev,cur,i)=>{
-
-            return prev+`${formatDate(cur?.date)}: запусков: ${cur?.users_per_day}, Выдач: ${cur?.cart_per_day}\n`
-        },"")
-        statStr+=`\nЗа неделю:\nЗапусков: ${res?.[0]?.users_per_week}, Выдач: ${res?.[0]?.cart_per_week}`
-        
-        console.log(statStr)
-
-        return ctx.replyWithTitle('STAT',[statStr])
-    })
+    const res = await connection.query(`SELECT day.date, users_per_day, users_per_week from 
+        (SELECT date, users_per_day FROM channels.statistics
+        WHERE DATEDIFF(now(), date) < 7) day right join
+        (SELECT sum(users_per_day) users_per_week FROM channels.statistics
+        WHERE DATEDIFF(now(), date) < 7 GROUP BY DATEDIFF(now(), date) < 7) week
+    on 1=1`)
     .catch((e)=>{
         console.log(e)
-
         ctx.replyWithTitle("DB_ERROR")
     })
+
+    const register_info = await connection.query(`SELECT day.date, registered_per_day, registered_per_week from 
+        (SELECT DATE(date_register) date, count(date_register) registered_per_day FROM channels.users
+        WHERE DATEDIFF(now(), date_register) < 7 GROUP BY DATE(date_register)) day right join
+        (SELECT count(date_register) registered_per_week FROM channels.users
+        WHERE DATEDIFF(now(), date_register) < 7 GROUP BY DATEDIFF(now(), date_register) < 7)  week
+    on 1=1`)
+    .catch((e)=>{
+        console.log(e)
+        ctx.replyWithTitle("DB_ERROR")
+    })
+
+    const { total_count, count_alive, count_active,count_aliens, count_arabs } = (await connection.query(`select count(id) total_count, sum(is_alive) count_alive, count(DATEDIFF(now(), lastUse) < 7) count_active, sum(language_code<>'ru') count_aliens, sum(is_arabic) count_arabs from channels.users`)
+    .catch((e)=>{
+        console.log(e)
+        ctx.replyWithTitle("DB_ERROR")
+    }))?.[0] ?? {}
+
+    
+
+    if (!res || !res.length)  return ctx.replyWithTitle('THERE_IS_NO_STAT')
+
+    let statStr = `<u><b>Пользователи</b></u>\n\nВсего: ${total_count}\nДоступных: ${count_alive}\nАктивных за неделю: ${count_active}\nИностранцев: ${count_aliens}\nАрабов: ${count_arabs}\n\n<u><b>Статистика использования</b></u>\n\n`
+
+    function getDates(startDate, stopDate) {
+        var dateArray = [];
+        var currentDate = moment(startDate);
+        var stopDate = moment(stopDate);
+        while (currentDate <= stopDate) {
+            dateArray.push( moment(currentDate).format('YYYY-MM-DD') )
+            currentDate = moment(currentDate).add(1, 'days');
+        }
+        return dateArray.reverse();
+    }
+
+    
+
+    let sd = new Date()
+    sd = sd.setDate(sd.getDate() - 7);
+
+    const dates = getDates(sd, Date.now())
+
+
+    dates.forEach((cur)=>{
+
+        const useInfo = res.find(el=>moment(el.date).format('YYYY-MM-DD') === cur)
+
+        const regInfo = register_info.find(el=>moment(el.date).format('YYYY-MM-DD') === cur)
+
+        if (useInfo?.users_per_day || regInfo?.registered_per_day) 
+         statStr+=`<b>${cur?.substr(8)}ое: ${useInfo?.users_per_day ?? 0}</b> уникальных запусков, <b>${regInfo?.registered_per_day ?? 0}</b> новых пользователей\n`
+    })
+
+    statStr+=`\n<b>За неделю: ${res?.[0]?.users_per_week ?? 0}</b> запусков, <b>${register_info?.[0]?.registered_per_week ?? 0}</b> новых пользователей`
+    
+    console.log(statStr)
+
+    return ctx.replyWithTitle('STAT',[statStr])
+    
+
+
     
 })
 

@@ -169,6 +169,9 @@ exports.admin_main_keyboard = ctx=>Markup.keyboard([
 	[
 		ctx.getTitle('BUTTON_CHANGE_TEXT'),
 	],
+	[
+		ctx.getTitle('BUTTON_STATISTICS'),
+	],
 	[ 
 		ctx.getTitle('BUTTON_CLIENT_MENU'),
 	],
@@ -188,6 +191,9 @@ exports.admin_main_keyboard_owner = ctx =>
 	],
 	[
 		ctx.getTitle('BUTTON_CHANGE_TEXT'),
+	],
+	[
+		ctx.getTitle('BUTTON_STATISTICS'),
 	],
 	[ 
 		ctx.getTitle('BUTTON_CLIENT_MENU'),
