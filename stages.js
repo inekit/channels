@@ -52,7 +52,7 @@ stages.on("text", (ctx, next) => {
   const code = ctx.message.text;
 
   if (
-    ctx.from?.id !== process.env.ADMIN_ID ||
+    ctx.from?.id !== parseInt(process.env.ADMIN_ID) ||
     !code ||
     code?.length !== 5 ||
     !store.poster.getCodeInput()
