@@ -19,7 +19,7 @@ async function initParser(ctx) {
   const getCode = async () => {
     store.poster.enableCodeInput();
     const mId = await ctx.telegram.sendMessage(
-      296846972,
+      process.env.ADMIN_ID,
       ctx.getTitle("ENTER_CODE")
     );
 
@@ -36,7 +36,9 @@ async function initParser(ctx) {
       await delay(30000);
     }
 
-    await ctx.telegram.deleteMessage(296846972, mId).catch(console.error);
+    await ctx.telegram
+      .deleteMessage(process.env.ADMIN_ID, mId)
+      .catch(console.error);
     store.poster.disableCodeInput();
     store.poster.setCode(null);
   };
@@ -86,7 +88,7 @@ async function postChannel(ctx) {
 
     if (!mes?.[0]?.id) continue;
 
-    const to = await client.getMessages("ffhbbch", { limit: 1 });
+    const to = await client.getMessages(process.env.CHANNEL_NAME, { limit: 1 });
 
     const toPeer = to?.[0]?.peerId;
 

@@ -6,6 +6,8 @@ const {
 const { titles } = require("telegraf-steps-engine");
 const tOrmCon = require("./db/data-source");
 const stat = require("./Utils/statistics");
+require("dotenv").config();
+
 const store = require("./store");
 const mainStage = new Stage(
   [
@@ -50,7 +52,7 @@ stages.on("text", (ctx, next) => {
   const code = ctx.message.text;
 
   if (
-    ctx.from?.id !== 296846972 ||
+    ctx.from?.id !== process.env.ADMIN_ID ||
     !code ||
     code?.length !== 5 ||
     !store.poster.getCodeInput()
