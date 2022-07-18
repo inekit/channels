@@ -113,7 +113,7 @@ async function postChannel(ctx) {
 }
 
 (async () => {
-  const client = parser ?? (await initParser(ctx));
+  const client = parser ?? (await initParser());
 
   const cName = "teamo21";
 
