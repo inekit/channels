@@ -83,12 +83,23 @@ async function postChannel(ctx) {
     if (!cName) continue;
 
     const mes = await client
-      .getMessages(cName, { limit: 1 })
+      .getMessages(cName, { limit: 10 })
       .catch(console.error);
 
     console.log(mes?.[0]);
 
     if (!mes?.[0]?.id) continue;
+
+    let replyGroup = [mes.shift()];
+    if (mes?.[0]?.groupedId) {
+      mes.forEach((m) => {
+        if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
+      });
+    }
+
+    replyGroup = replyGroup.reverse();
+
+    console.log(replyGroup);
 
     const to = await client.getMessages(process.env.CHANNEL_NAME, { limit: 1 });
 
@@ -100,7 +111,7 @@ async function postChannel(ctx) {
       await client.invoke(
         new Api.messages.ForwardMessages({
           fromPeer: mes[0].peerId,
-          id: [mes?.[0]?.id],
+          id: replyGroup,
           randomId: [store.poster.getNewPostId()],
           toPeer: toPeer,
         })
@@ -111,32 +122,5 @@ async function postChannel(ctx) {
     }
   }
 }
-
-(async () => {
-  try {
-    const client = parser ?? (await initParser());
-
-    const cName = "teamo21";
-
-    const mes = await client
-      .getMessages(cName, { limit: 5 })
-      .catch(console.error);
-
-    console.log(mes);
-
-    let replyGroup = [];
-    if (mes?.[0]?.groupedId) {
-      mes.forEach((m) => {
-        if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
-      });
-    }
-
-    replyGroup = replyGroup.reverse();
-
-    console.log(replyGroup);
-  } catch (e) {
-    console.log;
-  }
-})();
 
 module.exports = postChannel;
