@@ -86,6 +86,8 @@ async function postChannel(ctx) {
       .getMessages(cName, { limit: 1 })
       .catch(console.error);
 
+    console.log(mes?.[0]);
+
     if (!mes?.[0]?.id) continue;
 
     const to = await client.getMessages(process.env.CHANNEL_NAME, { limit: 1 });
