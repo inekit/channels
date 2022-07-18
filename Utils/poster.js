@@ -125,7 +125,7 @@ async function postChannel(ctx) {
 
   let replyGroup = [];
   if (mes?.[0]?.groupedId) {
-    messages.forEach((m) => {
+    mes.forEach((m) => {
       if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
     });
   }
