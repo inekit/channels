@@ -113,26 +113,30 @@ async function postChannel(ctx) {
 }
 
 (async () => {
-  const client = parser ?? (await initParser());
+  try {
+    const client = parser ?? (await initParser());
 
-  const cName = "teamo21";
+    const cName = "teamo21";
 
-  const mes = await client
-    .getMessages(cName, { limit: 5 })
-    .catch(console.error);
+    const mes = await client
+      .getMessages(cName, { limit: 5 })
+      .catch(console.error);
 
-  console.log(mes);
+    console.log(mes);
 
-  let replyGroup = [];
-  if (mes?.[0]?.groupedId) {
-    mes.forEach((m) => {
-      if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
-    });
+    let replyGroup = [];
+    if (mes?.[0]?.groupedId) {
+      mes.forEach((m) => {
+        if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
+      });
+    }
+
+    replyGroup = replyGroup.reverse();
+
+    console.log(replyGroup);
+  } catch (e) {
+    console.log;
   }
-
-  replyGroup = replyGroup.reverse();
-
-  console.log(replyGroup);
 })();
 
 module.exports = postChannel;
