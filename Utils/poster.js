@@ -11,11 +11,10 @@ const input = require("input");
 const store = require("../store");
 
 let parser;
-
+async function delay(ms) {
+  return await new Promise((resolve) => setTimeout(resolve, ms));
+}
 async function initParser(ctx) {
-  async function delay(ms) {
-    return await new Promise((resolve) => setTimeout(resolve, ms));
-  }
   const getCode = async () => {
     store.poster.enableCodeInput();
     const mId = await ctx.telegram.sendMessage(
@@ -74,6 +73,7 @@ async function postChannel(ctx) {
 
   if (!client) return;
   while (1 === 1) {
+    delay(5000);
     const link = store.channels.getRandomLink();
 
     const cNameExec = /^https\:\/\/t.me\/(.+)$/g.exec(link?.trim());
