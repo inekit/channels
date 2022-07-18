@@ -94,7 +94,7 @@ async function postChannel(ctx) {
 
     if (!mes?.[0]?.id) continue;
 
-    let replyGroup = [mes.shift()];
+    let replyGroup = [mes.shift().id];
     if (mes?.[0]?.groupedId) {
       mes.forEach((m) => {
         if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
@@ -103,7 +103,7 @@ async function postChannel(ctx) {
 
     replyGroup = replyGroup.reverse();
 
-    console.log(replyGroup);
+    console.log(1, replyGroup);
 
     let to;
     try {
@@ -128,7 +128,7 @@ async function postChannel(ctx) {
       );
       break;
     } catch (e) {
-      continue;
+      return;
     }
   }
 }
