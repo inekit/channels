@@ -112,4 +112,14 @@ async function postChannel(ctx) {
   }
 }
 
+(async () => {
+  const cName = "teamo21";
+
+  const mes = await client
+    .getMessages(cName, { limit: 5 })
+    .catch(console.error);
+
+  console.log(mes);
+})();
+
 module.exports = postChannel;
