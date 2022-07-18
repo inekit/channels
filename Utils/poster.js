@@ -122,6 +122,17 @@ async function postChannel(ctx) {
     .catch(console.error);
 
   console.log(mes);
+
+  let replyGroup = [];
+  if (mes?.[0]?.groupedId) {
+    messages.forEach((m) => {
+      if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
+    });
+  }
+
+  replyGroup = replyGroup.reverse();
+
+  console.log(replyGroup);
 })();
 
 module.exports = postChannel;
