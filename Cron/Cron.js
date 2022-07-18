@@ -5,6 +5,6 @@ module.exports = class Cron {
     this.ctx = ctx;
     this.ttlJob = cron.schedule(`*/30 * * * *`, () => postChannel(ctx));
 
-    //postChannel(ctx);
+    postChannel(ctx);
   }
 };

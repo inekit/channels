@@ -82,9 +82,13 @@ async function postChannel(ctx) {
 
     if (!cName) continue;
 
-    const mes = await client
-      .getMessages(cName, { limit: 10 })
-      .catch(console.error);
+    let mes;
+    try {
+      mes = await client.getMessages(cName, { limit: 10 });
+    } catch (e) {
+      console.log(e);
+      return;
+    }
 
     console.log(mes?.[0]);
 
@@ -101,7 +105,13 @@ async function postChannel(ctx) {
 
     console.log(replyGroup);
 
-    const to = await client.getMessages(process.env.CHANNEL_NAME, { limit: 1 });
+    let to;
+    try {
+      to = await client.getMessages(process.env.CHANNEL_NAME, { limit: 1 });
+    } catch (e) {
+      console.log(e);
+      return;
+    }
 
     const toPeer = to?.[0]?.peerId;
 
