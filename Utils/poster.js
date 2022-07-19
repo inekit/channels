@@ -95,15 +95,21 @@ async function postChannel(ctx) {
     if (!mes?.[0]?.id) continue;
 
     let replyGroup = [mes.shift().id];
+
+    let idGroup = [store.poster.getNewPostId()];
+
     if (mes?.[0]?.groupedId) {
       mes.forEach((m) => {
-        if (m.groupedId === mes[0].groupedId) replyGroup.push(m.id);
+        if (m.groupedId === mes[0].groupedId) {
+          replyGroup.push(m.id);
+          idGroup.push(store.poster.getNewPostId());
+        }
       });
     }
 
     replyGroup = replyGroup.reverse();
 
-    console.log(1, replyGroup);
+    console.log(1, replyGroup, idGroup);
 
     let to;
     try {
@@ -122,12 +128,13 @@ async function postChannel(ctx) {
         new Api.messages.ForwardMessages({
           fromPeer: mes[0].peerId,
           id: replyGroup,
-          randomId: [store.poster.getNewPostId()],
+          randomId: idGroup,
           toPeer: toPeer,
         })
       );
       break;
     } catch (e) {
+      console.log(e);
       return;
     }
   }
