@@ -99,12 +99,21 @@ async function postChannel(ctx) {
     let idGroup = [store.poster.getNewPostId()];
 
     if (mes?.[0]?.groupedId) {
-      mes.forEach((m) => {
-        if (m.groupedId === mes[0].groupedId) {
+      сonsole.log("ANOTHER:", mes);
+      for (let m of mes) {
+        console.log(
+          "id",
+          m.id,
+          "groupedId",
+          m.groupedId,
+          "mes0gid",
+          mes[0].groupedId
+        );
+        if (m.groupedId == mes[0].groupedId) {
           replyGroup.push(m.id);
           idGroup.push(store.poster.getNewPostId());
         }
-      });
+      }
     }
 
     replyGroup = replyGroup.reverse();
